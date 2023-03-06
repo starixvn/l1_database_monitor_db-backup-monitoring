@@ -212,16 +212,15 @@ function Invoke-SqlQuery {
             $SqlCommand.Parameters.AddRange($SqlParameters)
         }
 
+        Write-Debug "$Mode"
         switch ($Mode) {
             "NonQuery" {
-                Write-Debug "$Mode"
                 [int] $Result = $SqlCommand.ExecuteNonQuery()
 
                 $SqlCommand.Dispose()
                 return $Result
             }
             "Reader" {
-                Write-Debug "$Mode"
                 $DataSet = New-Object System.Data.DataSet
                 $SqlDataAdapter = New-Object System.Data.SqlClient.SqlDataAdapter $SqlCommand
                 $SqlDataAdapter.Fill($DataSet)
@@ -231,14 +230,12 @@ function Invoke-SqlQuery {
                 return $DataSet
             }
             "Scalar" {
-                Write-Debug "$Mode"
                 $Result = $SqlCommand.ExecuteScalar()
 
                 $SqlCommand.Dispose()
                 return $Result
             }
             "XmlReader" {
-                Write-Debug "$Mode"
                 throw "Mode `"$Mode`" hasn't been implemented yet"
             }
             Default {
