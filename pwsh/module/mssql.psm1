@@ -1,8 +1,8 @@
 function Read-SqlPasswordFromFile {
     param (
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [string] $File,
-    
+
         [Parameter()]
         [switch] $ReadOnly
     )
