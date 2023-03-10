@@ -18,6 +18,20 @@ function Read-SqlPasswordFromFile {
 }
 Export-ModuleMember -Function Read-SqlPasswordFromFile
 
+function Write-SqlPasswordToFile {
+    param(
+        [Parameter(Mandatory)]
+        [securestring]$SecureString,
+        [Parameter(Mandatory)]
+        [string]$OutputFile
+    )
+
+    process {
+        $SecureString | ConvertFrom-SecureString -Key (1..16) | Out-File $OutputFile
+    }
+}
+Export-ModuleMember -Function Write-SqlPasswordToFile
+
 function ConvertTo-RawString {
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -150,7 +164,7 @@ function New-SqlParameters {
     )
 
     if ($HashTable) {
-        $SqlParameters = $HashTable.GetEnumerator() | ForEach-Object {
+        [System.Data.SqlClient.SqlParameter[]]$SqlParameters = $HashTable.GetEnumerator() | ForEach-Object {
             New-Object System.Data.SqlClient.SqlParameter($_.Key, $_.Value)
         }
     }
@@ -183,7 +197,7 @@ function Invoke-SqlQuery {
         [Parameter()]
         [switch] $Procedure,
 
-        [Parameter()]
+        [Parameter(ValueFromPipeline)]
         [hashtable] $Parameters
 
     )
@@ -227,7 +241,7 @@ function Invoke-SqlQuery {
 
                 $SqlDataAdapter.Dispose()
                 $SqlCommand.Dispose()
-                return $DataSet
+                return $DataSet.Tables
             }
             "Scalar" {
                 $Result = $SqlCommand.ExecuteScalar()
