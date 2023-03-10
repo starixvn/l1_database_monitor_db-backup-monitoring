@@ -1,0 +1,4 @@
+USE SabaBK2DB;
+GO
+CREATE SCHEMA bkmon;
+GO

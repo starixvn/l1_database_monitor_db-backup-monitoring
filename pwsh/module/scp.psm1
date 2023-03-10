@@ -13,7 +13,7 @@ function IsApplication {
 
 function Set-ScpExecutor {
     param (
-        [Parameter()]
+        [Parameter(Position = 0)]
         [string]$Path
     )
 
@@ -49,11 +49,11 @@ function Copy-ScpFile {
         [Parameter()]
         [string] $Port = 22,
         [Parameter()]
+        [string] $HostKey,
+        [Parameter()]
         [string] $User = "root",
         [Parameter()]
         [string] $KeyFile,
-        [Parameter()]
-        [string] $HostKey,
         [Parameter(ParameterSetName = "Pull")]
         [switch] $Pull,
         [Parameter(ParameterSetName = "Push")]
@@ -63,6 +63,10 @@ function Copy-ScpFile {
     )
 
     begin {
+        if (-not (IsApplication -Path $scpExecutor)) {
+            throw "scp application is not initialized. Abort..."
+        }
+
         switch ($PSCmdlet.ParameterSetName) {
             "Pull" {
                 $Push = -not $Pull
@@ -97,6 +101,7 @@ function Copy-ScpFile {
 
     process {
         $Source = ($Pull ? "${User}@${Server}:" : "") + "${FromPath}"
+        $Destination = ($Push ? "${User}@${Server}:" : "") + "${ToPath}"
         Write-Verbose "& $script:scpExecutor $HostKeyParam $KeyFileParam $RecursiveParam -P $Port $Source $Destination"
         & $script:scpExecutor $QuietParam $HostKeyParam $KeyFileParam $RecursiveParam -P $Port "$Source" "$Destination"
     }
