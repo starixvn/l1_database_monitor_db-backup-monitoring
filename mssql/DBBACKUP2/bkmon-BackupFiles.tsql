@@ -1,29 +1,34 @@
 USE SabaBK2DB;
 
 CREATE TABLE dbo.BackupInfos (
-	FileName	NVARCHAR(256)	CONSTRAINT PK_BackupInfos PRIMARY KEY CLUSTERED
+	FileName	NVARCHAR(256)	NOT NULL
 ,	System		TINYINT
 ,	Environment	NVARCHAR(32)
 ,	BackupTime	DATETIME
+,	BackupType	NVARCHAR(32)	NOT NULL
 ,	Type		NVARCHAR(32)
 ,	Path		NVARCHAR(MAX)
 ,	Size		BIGINT
 ,	Timestamp	BIGINT
 ,	isDeleted	BIT
-)
+,	CONSTRAINT PK_BackupInfos PRIMARY KEY CLUSTERED (FileName, BackupType)
+);
+GO
+CREATE INDEX IX_BackupInfos_BackupTime ON dbo.BackupInfos (BackupTime ASC);
 GO
 CREATE PROCEDURE	dbo.InsertBackupInfo
 						@FileName		NVARCHAR(256)
 					,	@System			TINYINT
 					,	@Environment	NVARCHAR(32)
 					,	@BackupTime		DATETIME
+					,	@BackupType		NVARCHAR(32)
 					,	@Type			NVARCHAR(32)
 					,	@Path			NVARCHAR(MAX)
 					,	@Size			BIGINT
 					,	@Timestamp		BIGINT
 AS
 BEGIN;
-	INSERT INTO	dbo.BackupInfos ([FileName], [System], [Environment], [BackupTime], [Type], [Path], [Size], [Timestamp])
-	VALUES (@FileName, @System, @Environment, @BackupTime, @Type, @Path, @Size, @Timestamp)
+	INSERT INTO	dbo.BackupInfos ([FileName], [System], [Environment], [BackupTime], [BackupType], [Type], [Path], [Size], [Timestamp])
+	VALUES (@FileName, @System, @Environment, @BackupTime, @BackupType, @Type, @Path, @Size, @Timestamp)
 END;
 GO
