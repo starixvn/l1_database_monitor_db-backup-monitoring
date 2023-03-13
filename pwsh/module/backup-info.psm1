@@ -12,7 +12,7 @@ class BackupInfo {
     [Int64]$Size
     [Int64]$Timestamp
 
-    BackupInfo([System.IO.FileInfo]$BackupFile) {
+    hidden InitBackupInfo([System.IO.FileInfo]$BackupFile) {
         $this.Path = $BackupFile.FullName
         $this.FileName = $BackupFile.Name
         $this.Size = $BackupFile.Length
@@ -21,12 +21,17 @@ class BackupInfo {
         $this.System, $this.Environment, $local:DateTime = ([regex]"^L(\d)-(\w+)-(\d{8}-\d{6})$").Match($Name).Groups[1..3].Value
 
         $this.BackupTime = [DateTime]::ParseExact("${DateTime}Z", "yyyyMMdd-HHmmssZ", $null)
-        $this.Timestamp = Get-Content "$($BackupFile.Directory)/${Name}.ts"
+        $this.Timestamp = Get-Content "$($BackupFile.Directory)/${Name}.ts" -ErrorAction SilentlyContinue
 
         $this.BackupType = $this.Type
     }
+
+    BackupInfo([System.IO.FileInfo]$BackupFile) {
+        $this.InitBackupInfo($BackupFile)
+    }
+
     BackupInfo([System.IO.FileInfo]$BackupFile, [string]$BackupType) {
-        $this.BackupInfo($BackupFile);
+        $this.InitBackupInfo($BackupFile)
 
         if ($BackupType) {
             $this.BackupType = $BackupType
