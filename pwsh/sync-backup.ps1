@@ -36,7 +36,7 @@ function Copy-BackupFile {
 
         Copy-ScpFile -FromPath $Remote -ToPath $Local -Server $Source.Server -HostKey $Source.HostKey -User $Credential.User -KeyFile $Credential.KeyFile -Pull -Recursive
 
-        Get-Item "${Local}\${Pattern}.tar.zstd" | New-BackupInfo | Send-BackupInfo -SqlClient $DBBACKUP2 -Procedure "SabaBK2DB.dbo.InsertBackupInfo"
+        Get-Item "${Local}\${Pattern}.tar.zstd" | New-BackupInfo -Type $Type | Send-BackupInfo -SqlClient $DBBACKUP2 -Procedure "SabaBK2DB.dbo.InsertBackupInfo"
     }
 }
 

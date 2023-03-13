@@ -5,6 +5,7 @@ class BackupInfo {
     [int]$System
     [string]$Environment
     [datetime]$BackupTime
+    [string]$BackupType
     [string]$Type
     [string]$FileName
     [string]$Path
@@ -21,6 +22,15 @@ class BackupInfo {
 
         $this.BackupTime = [DateTime]::ParseExact("${DateTime}Z", "yyyyMMdd-HHmmssZ", $null)
         $this.Timestamp = Get-Content "$($BackupFile.Directory)/${Name}.ts"
+
+        $this.BackupType = $this.Type
+    }
+    BackupInfo([System.IO.FileInfo]$BackupFile, [string]$BackupType) {
+        $this.BackupInfo($BackupFile);
+
+        if ($BackupType) {
+            $this.BackupType = $BackupType
+        }
     }
 }
 
@@ -29,11 +39,13 @@ function New-BackupInfo {
 
     param(
         [Parameter(Mandatory, ParameterSetName = "File", ValueFromPipeline, Position = 0)]
-        [System.IO.FileInfo]$File
+        [System.IO.FileInfo]$File,
+        [Parameter()]
+        [string]$Type
     )
 
     process {
-        return [BackupInfo]::new($File)
+        return [BackupInfo]::new($File, $Type)
     }
 }
 Export-ModuleMember -Function New-BackupInfo
